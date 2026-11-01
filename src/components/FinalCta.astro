@@ -1,0 +1,73 @@
+---
+import { primaryContact } from '../data/site';
+import Icon from './Icon.astro';
+---
+
+<section class="final" aria-labelledby="final-title">
+  <div class="wrap inner">
+    <svg class="tear" viewBox="0 0 24 32" aria-hidden="true" focusable="false">
+      <path d="M12 0S0 14.2 0 20.6A11.8 11.4 0 0 0 12 32a11.8 11.4 0 0 0 12-11.4C24 14.2 12 0 12 0Z" />
+    </svg>
+    <div class="copy">
+      <h2 class="display title" id="final-title" data-reveal>¿Ya lo tienes<br />en la cabeza?</h2>
+      <p class="lede" data-reveal style="--delay:.08s">Cuéntanoslo tal cual. Del resto nos encargamos juntos.</p>
+      <a class="btn btn--primary" href={primaryContact.href} target="_blank" rel="noopener" data-reveal style="--delay:.14s">
+        Escríbenos por {primaryContact.channel}
+        <Icon name="arrow" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--space-2xl);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    background:
+      radial-gradient(circle at 78% 60%, rgb(134 193 232 / 0.09), transparent 45%),
+      var(--ink);
+  }
+
+  .inner {
+    position: relative;
+    display: grid;
+    align-items: center;
+  }
+
+  .tear {
+    position: absolute;
+    right: var(--gutter);
+    top: 50%;
+    transform: translateY(-50%);
+    height: 120%;
+    width: auto;
+    fill: var(--tear);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .copy {
+    position: relative;
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+
+  .title {
+    font-size: var(--step-5);
+  }
+
+  @media (min-width: 960px) {
+    .tear {
+      opacity: 1;
+      height: 88%;
+      right: 10%;
+      fill: none;
+      stroke: var(--tear);
+      stroke-width: 0.12;
+    }
+  }
+</style>

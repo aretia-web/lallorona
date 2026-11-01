@@ -1,0 +1,336 @@
+---
+/**
+ * Proceso de cita + "prepara tu mensaje".
+ * No hay backend: el formulario no envía ni guarda nada. Compone el texto y lo abre en WhatsApp
+ * (si hay número configurado) o lo copia y abre el chat de Instagram.
+ */
+import { site, primaryContact } from '../data/site';
+import { artists } from '../data/artists';
+import Icon from './Icon.astro';
+
+const steps = [
+  { title: 'Cuéntanos tu idea', text: 'Qué quieres, dónde y más o menos de qué tamaño. Si tienes referencias, tráelas al chat.' },
+  { title: 'Hablamos los detalles', text: 'El estudio revisa la propuesta, te pregunta lo que haga falta y te orienta hacia el residente adecuado.' },
+  { title: 'Cerramos la cita', text: 'Seguís la conversación para acordar fecha y siguientes pasos directamente con el estudio.' },
+];
+const usesWhatsapp = Boolean(site.whatsapp);
+---
+
+<section class="section booking" id="cita" aria-labelledby="cita-title">
+  <div class="wrap">
+    <p class="kicker label"><span class="num">06</span> Cómo pedir cita</p>
+    <h2 class="h2" id="cita-title" data-reveal>Tres pasos,<br />cero formularios eternos.</h2>
+
+    <ol class="steps" role="list">
+      {
+        steps.map((s, i) => (
+          <li data-reveal style={`--delay:${i * 0.08}s`}>
+            <span class="step-num display" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="h3"><span class="visually-hidden">Paso {i + 1}: </span>{s.title}</h3>
+            <p class="muted">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="brief" data-reveal>
+      <div class="brief__intro">
+        <p class="label brief__kicker"><Icon name="drop" /> Prepara tu mensaje</p>
+        <h3 class="h3">Te lo dejamos escrito.</h3>
+        <p class="muted">
+          Rellena lo que sepas y te preparamos el primer mensaje para {usesWhatsapp ? 'WhatsApp' : 'Instagram'}.
+          Solo lo enviarás tú, desde tu cuenta.
+        </p>
+        <p class="privacy">
+          Nada de lo que escribas aquí se guarda ni se envía desde esta web.
+        </p>
+        <p class="alt muted">
+          ¿Prefieres ir directo?
+          <a class="text-link" href={primaryContact.href} target="_blank" rel="noopener">Abrir {primaryContact.channel}</a>
+        </p>
+      </div>
+
+      <form class="form" novalidate data-brief data-channel={usesWhatsapp ? 'whatsapp' : 'instagram'} data-whatsapp={site.whatsapp ?? ''} data-dm={site.instagram.dm}>
+        <div class="field">
+          <label for="f-name">Tu nombre <span class="req">(obligatorio)</span></label>
+          <input id="f-name" name="name" type="text" autocomplete="given-name" required maxlength="60" aria-describedby="f-name-err" />
+          <p class="error" id="f-name-err" hidden>Dinos cómo te llamas.</p>
+        </div>
+
+        <div class="field">
+          <label for="f-idea">Tu idea <span class="req">(obligatorio)</span></label>
+          <textarea id="f-idea" name="idea" rows="4" required maxlength="800" aria-describedby="f-idea-hint f-idea-err"></textarea>
+          <p class="hint" id="f-idea-hint">Qué quieres tatuarte, estilo, si es en negro o en color…</p>
+          <p class="error" id="f-idea-err" hidden>Cuéntanos al menos un poco de la idea (mínimo 10 caracteres).</p>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="f-zone">Zona del cuerpo</label>
+            <input id="f-zone" name="zone" type="text" maxlength="60" placeholder="Antebrazo, gemelo…" />
+          </div>
+          <div class="field">
+            <label for="f-size">Tamaño aproximado</label>
+            <select id="f-size" name="size">
+              <option value="">Sin especificar</option>
+              <option>Pequeño (menos de 5 cm)</option>
+              <option>Mediano (5–15 cm)</option>
+              <option>Grande (más de 15 cm)</option>
+              <option>Proyecto grande (manga, espalda…)</option>
+              <option>No lo sé todavía</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-artist">¿Con quién?</label>
+          <select id="f-artist" name="artist">
+            <option value="">Me da igual / que me aconsejen</option>
+            {artists.map((a) => <option value={a.name}>{a.name}</option>)}
+          </select>
+        </div>
+
+        <p class="hint">Las fotos de referencia las podrás mandar en el propio chat.</p>
+
+        <button class="btn btn--primary submit" type="submit">
+          {usesWhatsapp ? 'Abrir WhatsApp con mi mensaje' : 'Copiar mensaje y abrir Instagram'}
+          <Icon name="arrow" />
+        </button>
+
+        <div class="result" role="status" aria-live="polite" data-brief-status hidden>
+          <p class="result__msg" data-brief-msg></p>
+          <pre class="result__text" data-brief-text></pre>
+          <div class="result__actions">
+            <button type="button" class="btn btn--ghost" data-brief-copy>Copiar de nuevo</button>
+            <a class="btn btn--ghost" href={primaryContact.href} target="_blank" rel="noopener">Abrir {primaryContact.channel}</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/brief';
+</script>
+
+<style>
+  .booking .h2 {
+    max-width: 14ch;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--space-l);
+    margin-block: var(--space-xl);
+    counter-reset: step;
+  }
+
+  .steps li {
+    display: grid;
+    gap: 0.6rem;
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .step-num {
+    font-size: var(--step-4);
+    color: var(--oak);
+    line-height: 0.8;
+  }
+
+  .steps p {
+    max-width: 34ch;
+  }
+
+  @media (min-width: 768px) {
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gutter);
+    }
+  }
+
+  .brief {
+    display: grid;
+    gap: var(--space-l);
+    padding: clamp(1.25rem, 4vw, 3.5rem);
+    background: var(--ink-2);
+    border: 1px solid var(--color-border);
+  }
+
+  @media (min-width: 960px) {
+    .brief {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-xl);
+    }
+  }
+
+  .brief__intro {
+    display: grid;
+    gap: var(--space-s);
+    align-content: start;
+  }
+
+  .brief__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--tear);
+  }
+
+  .brief__kicker :global(svg) {
+    width: 0.7rem;
+    height: auto;
+  }
+
+  .privacy {
+    font-size: 0.9rem;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--oak);
+  }
+
+  .alt {
+    font-size: 0.95rem;
+  }
+
+  .form {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .row {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  @media (min-width: 640px) {
+    .row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .field {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .req {
+    font-weight: 400;
+    color: var(--bone-dim);
+    font-size: 0.85rem;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.7rem 0.85rem;
+    background: var(--ink);
+    border: 1px solid rgb(236 230 218 / 0.28);
+    border-radius: 0;
+    transition: border-color 0.2s;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 7rem;
+  }
+
+  select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--bone) 50%), linear-gradient(135deg, var(--bone) 50%, transparent 50%);
+    background-position:
+      calc(100% - 1.15rem) 55%,
+      calc(100% - 0.8rem) 55%;
+    background-size: 0.35rem 0.35rem;
+    background-repeat: no-repeat;
+    padding-right: 2.25rem;
+  }
+
+  input::placeholder {
+    color: #8a8276;
+  }
+
+  input:hover,
+  select:hover,
+  textarea:hover {
+    border-color: rgb(236 230 218 / 0.5);
+  }
+
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline-offset: 0;
+    border-color: var(--tear);
+  }
+
+  [aria-invalid='true'] {
+    border-color: #f0a08a;
+  }
+
+  .hint {
+    font-size: 0.85rem;
+    color: var(--bone-dim);
+  }
+
+  .error {
+    font-size: 0.9rem;
+    color: #f0a08a;
+  }
+
+  .error::before {
+    content: '✕ ';
+  }
+
+  .submit {
+    justify-self: start;
+  }
+
+  @media (max-width: 639px) {
+    .submit {
+      justify-self: stretch;
+    }
+  }
+
+  .result {
+    display: grid;
+    gap: 0.75rem;
+    padding: var(--space-m);
+    border: 1px solid var(--tear);
+  }
+
+  .result[hidden] {
+    display: none;
+  }
+
+  .result__msg {
+    font-weight: 600;
+  }
+
+  .result__text {
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--bone-dim);
+    max-height: 12rem;
+    overflow: auto;
+  }
+
+  .result__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .result__actions .btn {
+    min-height: 2.75rem;
+    font-size: 0.8rem;
+  }
+</style>

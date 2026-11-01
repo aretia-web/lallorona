@@ -1,0 +1,137 @@
+---
+import { studioImages } from '../data/gallery';
+import { site, mapsUrl } from '../data/site';
+import Media from './Media.astro';
+import Icon from './Icon.astro';
+const [main, detail] = studioImages;
+---
+
+<section class="section studio" id="estudio" aria-labelledby="estudio-title">
+  <div class="wrap">
+    <p class="kicker label">
+      <span class="num">05</span> El estudio
+      {site.showDraftMarks && <span class="draft-chip">Texto provisional</span>}
+    </p>
+
+    <div class="layout">
+      <figure class="main" data-reveal>
+        <Media image={main?.image} alt={main?.alt ?? 'Interior del estudio'} aspect="16 / 11" sizes="(min-width: 960px) 58vw, 100vw" />
+      </figure>
+
+      <div class="text">
+        <h2 class="h2" id="estudio-title" data-reveal>Private studio.</h2>
+        <p class="lede" data-reveal style="--delay:.08s">
+          Un estudio privado en {site.address.area}. Aquí no se entra de paso: se viene a tatuarse, con tiempo y con
+          la persona que has elegido.
+        </p>
+        <p class="muted" data-reveal style="--delay:.12s">
+          Escríbenos antes de venir y te decimos cuándo puede atenderte tu residente.
+        </p>
+        <a class="text-link addr" href={mapsUrl} target="_blank" rel="noopener" data-reveal>
+          <Icon name="pin" />
+          {site.address.street}, {site.address.area}
+        </a>
+      </div>
+
+      <figure class="detail" data-reveal style="--delay:.1s">
+        <Media image={detail?.image} alt={detail?.alt ?? 'Detalle del estudio'} aspect="3 / 4" sizes="(min-width: 960px) 24vw, 60vw" />
+      </figure>
+
+      <article class="flash" data-reveal>
+        <p class="label flash__kicker"><Icon name="star" /> Flash Days</p>
+        <h3 class="h3">Diseños listos, varias manos y música.</h3>
+        <p class="muted">
+          De vez en cuando el estudio organiza jornadas de flash con diseños preparados por los residentes. Las fechas
+          se anuncian en Instagram.
+        </p>
+        <a class="text-link" href={site.instagram.url} target="_blank" rel="noopener">Sigue el próximo en @{site.instagram.handle}</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--space-l) var(--gutter);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .main {
+    grid-column: 1 / -1;
+  }
+
+  .text {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--space-m);
+    align-content: start;
+  }
+
+  .detail {
+    grid-column: 2 / -1;
+  }
+
+  .flash {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 0.75rem;
+    padding: var(--space-l);
+    background: var(--ink-2);
+    border-left: 2px solid var(--tear);
+  }
+
+  .flash__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--tear);
+  }
+
+  .flash__kicker :global(svg) {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  .flash .text-link {
+    justify-self: start;
+  }
+
+  .addr {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-self: start;
+  }
+
+  .addr :global(svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex: none;
+  }
+
+  @media (min-width: 960px) {
+    .layout {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      row-gap: var(--space-xl);
+    }
+    .main {
+      grid-column: 1 / 8;
+      grid-row: 1 / 3;
+    }
+    .text {
+      grid-column: 9 / -1;
+      grid-row: 1;
+    }
+    .detail {
+      grid-column: 9 / 12;
+      grid-row: 2;
+    }
+    .flash {
+      grid-column: 2 / 8;
+      grid-row: 3;
+      margin-top: calc(var(--space-xl) * -1.6);
+      position: relative;
+    }
+  }
+</style>

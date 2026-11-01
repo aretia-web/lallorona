@@ -1,0 +1,420 @@
+---
+import { getImage } from 'astro:assets';
+import { works } from '../data/gallery';
+import { site } from '../data/site';
+import { resolveImage } from '../lib/images';
+import Media from './Media.astro';
+import Icon from './Icon.astro';
+
+const items = await Promise.all(
+  works.map(async (work, i) => {
+    const src = resolveImage(work.image);
+    const full = src ? await getImage({ src, width: Math.min(src.width, 1800), format: 'webp', quality: 82 }) : null;
+    const caption = [work.title, work.artist && `por ${work.artist}`].filter(Boolean).join(' · ');
+    return { ...work, n: String(i + 1).padStart(2, '0'), full, caption };
+  }),
+);
+
+// Los filtros solo aparecen si hay al menos dos estilos con tres piezas cada uno.
+const counts = new Map<string, number>();
+works.forEach((w) => w.category && counts.set(w.category, (counts.get(w.category) ?? 0) + 1));
+const categories = [...counts].filter(([, n]) => n >= 3).map(([c]) => c);
+const showFilters = categories.length >= 2;
+
+const sizes: Record<string, string> = {
+  feature: '(min-width: 960px) 46vw, 100vw',
+  wide: '(min-width: 960px) 46vw, 100vw',
+  tall: '(min-width: 960px) 23vw, 50vw',
+  regular: '(min-width: 960px) 23vw, 50vw',
+};
+const aspects: Record<string, string> = { feature: '4 / 5', wide: '16 / 10', tall: '3 / 4', regular: '3 / 4' };
+---
+
+<section class="section gallery" id="trabajos" aria-labelledby="trabajos-title">
+  <div class="wrap">
+    <p class="kicker label"><span class="num">02</span> Trabajos</p>
+
+    <div class="intro">
+      <h2 class="h2" id="trabajos-title" data-reveal>Hecho aquí.</h2>
+      <p class="lede muted" data-reveal style="--delay:.1s">
+        Una selección de piezas de los residentes. El archivo completo, con lo último que sale de las máquinas,
+        está en Instagram.
+      </p>
+    </div>
+
+    {
+      showFilters && (
+        <div class="filters" role="group" aria-label="Filtrar por estilo" data-filters>
+          <button type="button" class="chip" aria-pressed="true" data-filter="*">Todo</button>
+          {categories.map((c) => (
+            <button type="button" class="chip" aria-pressed="false" data-filter={c}>
+              {c}
+            </button>
+          ))}
+        </div>
+      )
+    }
+
+    <ul class="grid-works" role="list" data-gallery>
+      {
+        items.map((item, i) => (
+          <li class={`work work--${item.size}`} data-category={item.category ?? ''} data-reveal style={`--delay:${(i % 3) * 0.08}s`}>
+            {item.full ? (
+              <button
+                type="button"
+                class="work__open"
+                data-full={item.full.src}
+                data-alt={item.alt}
+                data-caption={item.caption}
+                aria-label={`Ampliar: ${item.alt}`}
+              >
+                <Media image={item.image} alt={item.alt} aspect={aspects[item.size]} sizes={sizes[item.size]} />
+                <span class="work__zoom label" aria-hidden="true">
+                  <Icon name="expand" /> Ampliar
+                </span>
+              </button>
+            ) : (
+              <Media image={item.image} alt={item.alt} aspect={aspects[item.size]} sizes={sizes[item.size]} />
+            )}
+            <p class="work__meta label">
+              <span class="num">{item.n}</span>
+              {item.caption && <span>{item.caption}</span>}
+              {item.category && <span class="muted">{item.category}</span>}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="more" data-reveal>
+      <p class="muted">¿Buscas un estilo concreto? Pregunta y te decimos quién encaja mejor con tu idea.</p>
+      <a class="btn btn--ghost" href={site.instagram.url} target="_blank" rel="noopener">
+        <Icon name="instagram" /> Ver más en Instagram
+      </a>
+    </div>
+  </div>
+
+  <dialog class="lightbox" aria-label="Visor de trabajos" data-lightbox>
+    <div class="lb__top">
+      <p class="label lb__count" aria-live="polite" data-lb-count></p>
+      <button type="button" class="lb__btn" data-lb-close>
+        <span class="label">Cerrar</span>
+        <Icon name="close" />
+      </button>
+    </div>
+    <figure class="lb__figure">
+      <img data-lb-img alt="" />
+      <figcaption class="label muted" data-lb-caption></figcaption>
+    </figure>
+    <button type="button" class="lb__nav lb__prev" aria-label="Anterior" data-lb-prev><Icon name="prev" /></button>
+    <button type="button" class="lb__nav lb__next" aria-label="Siguiente" data-lb-next><Icon name="next" /></button>
+  </dialog>
+</section>
+
+<script>
+  import '../scripts/gallery';
+</script>
+
+<style>
+  .intro {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+    align-items: end;
+  }
+
+  @media (min-width: 960px) {
+    .intro {
+      grid-template-columns: 1fr minmax(0, 26rem);
+    }
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: var(--space-l);
+  }
+
+  .chip {
+    min-height: 2.75rem;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--color-border);
+    background: none;
+    font-variation-settings: 'wdth' 75;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  .chip[aria-pressed='true'] {
+    background: var(--bone);
+    color: var(--ink);
+    border-color: var(--bone);
+  }
+
+  .grid-works {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-l) var(--gutter);
+    align-items: start;
+  }
+
+  .work[hidden] {
+    display: none;
+  }
+
+  .work--feature,
+  .work--wide {
+    grid-column: span 2;
+  }
+
+  .work__open {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .work__open :global(img) {
+    transition:
+      transform 0.8s var(--ease),
+      filter 0.4s;
+  }
+
+  .work__open:hover :global(img),
+  .work__open:focus-visible :global(img) {
+    transform: scale(1.03);
+    filter: contrast(1.06);
+  }
+
+  .work__zoom {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.6rem;
+    background: var(--ink);
+    color: var(--bone);
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 0.3s,
+      transform 0.3s var(--ease);
+  }
+
+  .work__zoom :global(svg) {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  .work__open:hover .work__zoom,
+  .work__open:focus-visible .work__zoom {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (hover: none) {
+    .work__zoom {
+      opacity: 1;
+      transform: none;
+      padding: 0.35rem;
+    }
+    .work__zoom :global(svg) + * {
+      display: none;
+    }
+  }
+
+  .work__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    padding-top: 0.6rem;
+  }
+
+  .work__meta .num {
+    color: var(--oak);
+  }
+
+  @media (min-width: 960px) {
+    .grid-works {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-auto-flow: dense;
+      row-gap: var(--space-xl);
+    }
+    .work--feature {
+      grid-column: span 6;
+    }
+    .work--wide {
+      grid-column: span 6;
+    }
+    .work--tall {
+      grid-column: span 3;
+    }
+    .work--regular {
+      grid-column: span 3;
+    }
+    .work--regular :global(.media) {
+      aspect-ratio: 1 / 1;
+    }
+    /* Desfase editorial: las piezas pequeñas bajan respecto a la protagonista. */
+    .work:nth-child(3) {
+      margin-top: 40%;
+    }
+    .work:nth-child(5) {
+      margin-top: -18%;
+    }
+    .work:nth-child(8) {
+      margin-top: 30%;
+    }
+  }
+
+  .more {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .more .btn :global(svg) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  /* ---- Visor ---- */
+
+  .lightbox {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(14 13 12 / 0.97);
+    color: var(--bone);
+    overscroll-behavior: contain;
+  }
+
+  .lightbox[open] {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    animation: lb-in 0.3s var(--ease);
+  }
+
+  .lightbox::backdrop {
+    background: rgb(14 13 12 / 0.9);
+  }
+
+  @keyframes lb-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .lb__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem var(--gutter);
+    min-height: var(--header-h);
+  }
+
+  .lb__count {
+    color: var(--oak);
+  }
+
+  .lb__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding: 0 0.5rem;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .lb__btn :global(svg) {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .lb__figure {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    justify-items: center;
+    gap: 0.75rem;
+    min-height: 0;
+    padding: 0 var(--gutter) var(--space-m);
+    touch-action: pan-y;
+  }
+
+  .lb__figure img {
+    max-width: 100%;
+    max-height: 100%;
+    min-height: 0;
+    object-fit: contain;
+    align-self: center;
+  }
+
+  .lb__nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid var(--color-border);
+    background: rgb(14 13 12 / 0.7);
+    cursor: pointer;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+
+  .lb__nav:hover {
+    background: var(--bone);
+    color: var(--ink);
+  }
+
+  .lb__nav :global(svg) {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+
+  .lb__prev {
+    left: var(--gutter);
+  }
+
+  .lb__next {
+    right: var(--gutter);
+  }
+
+  .lb__nav[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 639px) {
+    .lb__nav {
+      top: auto;
+      bottom: max(1rem, env(safe-area-inset-bottom));
+      transform: none;
+    }
+    .lb__figure {
+      padding-bottom: 5rem;
+    }
+  }
+</style>
