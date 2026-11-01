@@ -2,26 +2,23 @@
 import { primaryContact, site } from '../data/site';
 import { heroImage } from '../data/gallery';
 import Media from './Media.astro';
-import Icon from './Icon.astro';
 ---
 
 <section class="hero" data-hero aria-labelledby="hero-title">
   <div class="wrap grid hero__grid">
     <p class="meta label">
-      <span>Nº 01</span>
-      <span class="dot" aria-hidden="true"></span>
       <span>{site.descriptor}</span>
       <span class="loc">{site.address.area}, {site.address.city}</span>
     </p>
 
     <h1 class="masthead display" id="hero-title">
-      <span class="la">La</span>
+      <span class="la">La</span>{" "}
       <span class="llorona">Llorona</span>
       <span class="visually-hidden">, estudio de tatuaje en {site.address.area}, {site.address.city}</span>
     </h1>
 
     <div class="copy">
-      <p class="tagline shout">Aquí se llora poco.<br /><span>Y se tatúa mucho.</span></p>
+      <p class="tagline shout">Pa que llore mi mare,<br />que llore la tuya.</p>
       <p class="sub">
         Estudio privado de tatuaje en {site.address.area} con un equipo de residentes: realismo en negro y gris,
         color, línea fina y diseños pensados para ti.
@@ -29,7 +26,6 @@ import Icon from './Icon.astro';
       <div class="actions">
         <a class="btn btn--primary" href={primaryContact.href} target="_blank" rel="noopener">
           Pide tu cita
-          <Icon name="arrow" />
         </a>
         <a class="btn btn--ghost" href="#trabajos">Explora los trabajos</a>
       </div>
@@ -42,21 +38,14 @@ import Icon from './Icon.astro';
         aspect="4 / 5"
         sizes="(min-width: 960px) 38vw, 100vw"
         priority
-        position="50% 35%"
+        position={heroImage.position}
       />
       <figcaption class="label">
-        <span>Fig. 01</span>
-        <span class="muted">Trabajo de residente</span>
+        <span>{heroImage.caption}</span>
       </figcaption>
-      <Icon name="drop" class="photo__drop" />
     </figure>
 
-    <p class="side label" aria-hidden="true">{site.address.street} · {site.address.area}</p>
-
-    <a class="scroll label" href="#trabajos">
-      <span class="num">02</span> Trabajos
-      <Icon name="arrow-down" />
-    </a>
+    <p class="side label" aria-hidden="true">{site.address.street}, {site.address.area}</p>
   </div>
 </section>
 
@@ -96,13 +85,6 @@ import Icon from './Icon.astro';
     color: var(--bone-dim);
   }
 
-  .dot {
-    width: 4px;
-    height: 4px;
-    background: currentColor;
-    border-radius: 50%;
-  }
-
   .masthead {
     display: flex;
     flex-direction: column;
@@ -129,10 +111,6 @@ import Icon from './Icon.astro';
 
   .tagline {
     font-size: clamp(1.9rem, 8.4vw, 3.4rem);
-  }
-
-  .tagline span {
-    color: var(--tear);
   }
 
   .sub {
@@ -163,20 +141,7 @@ import Icon from './Icon.astro';
     color: var(--oak);
   }
 
-  .photo :global(.photo__drop) {
-    position: absolute;
-    top: -1.1rem;
-    right: 1.25rem;
-    width: 1.6rem;
-    height: auto;
-    color: var(--tear);
-  }
-
   .side {
-    display: none;
-  }
-
-  .scroll {
     display: none;
   }
 
@@ -244,37 +209,6 @@ import Icon from './Icon.astro';
       color: var(--bone-dim);
       opacity: 0.7;
       grid-column: auto;
-    }
-
-    .scroll {
-      grid-column: 1 / 6;
-      grid-row: 4;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      justify-self: start;
-      text-decoration: none;
-      color: var(--bone-dim);
-      padding-block: 0.5rem;
-      transition: color 0.2s;
-    }
-
-    .scroll .num {
-      color: var(--oak);
-    }
-
-    .scroll :global(svg) {
-      width: 1rem;
-      height: 1rem;
-      transition: transform 0.3s var(--ease);
-    }
-
-    .scroll:hover {
-      color: var(--bone);
-    }
-
-    .scroll:hover :global(svg) {
-      transform: translateY(3px);
     }
   }
 

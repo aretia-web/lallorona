@@ -1,29 +1,23 @@
 ---
 /**
- * Marca provisional: lágrima + nombre en gótica.
- * Cuando el estudio facilite su logotipo en SVG, sustituir este componente.
+ * Nombre del estudio en gótica. Para usar el sello completo, ver src/assets/marca/logo.png.
  */
-import Icon from './Icon.astro';
 interface Props {
   size?: 'sm' | 'lg';
 }
 const { size = 'sm' } = Astro.props;
 ---
 
-<span class:list={['wordmark', `wordmark--${size}`]}>
-  <Icon name="drop" class="wordmark__drop" />
-  <span class="wordmark__name">La Llorona</span>
-</span>
+<span class:list={['wordmark', `wordmark--${size}`]}>La Llorona</span>
 
 <style>
   .wordmark {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45em;
+    display: inline-block;
     font-family: var(--font-display);
     font-weight: 700;
     line-height: 1;
     white-space: nowrap;
+    letter-spacing: 0.005em;
   }
 
   .wordmark--sm {
@@ -32,16 +26,5 @@ const { size = 'sm' } = Astro.props;
 
   .wordmark--lg {
     font-size: var(--step-4);
-  }
-
-  .wordmark__drop {
-    width: 0.42em;
-    height: auto;
-    color: var(--tear);
-    transform: translateY(-0.04em);
-  }
-
-  .wordmark__name {
-    letter-spacing: 0.005em;
   }
 </style>

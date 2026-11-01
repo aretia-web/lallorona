@@ -1,6 +1,5 @@
 ---
 import { artists } from '../data/artists';
-import { site } from '../data/site';
 import { resolveImage } from '../lib/images';
 import { Picture } from 'astro:assets';
 import Icon from './Icon.astro';
@@ -10,9 +9,7 @@ const rows = artists.map((a, i) => ({ ...a, n: String(i + 1).padStart(2, '0'), i
 
 <section class="section residents" id="residentes" aria-labelledby="residentes-title">
   <div class="wrap">
-    <p class="kicker label">
-      <span class="num">04</span> Residentes
-    </p>
+    <p class="kicker label">Residentes</p>
 
     <div class="head">
       <h2 class="h2" id="residentes-title" data-reveal>Muchas manos,<br />una casa.</h2>
@@ -32,9 +29,15 @@ const rows = artists.map((a, i) => ({ ...a, n: String(i + 1).padStart(2, '0'), i
             )}
             <h3 class="name display">
               {a.name}
-              {a.tag && <span class="tag label">{a.tag}</span>}
+              {a.tag && (
+                <span class="tag label">
+                  <span class="visually-hidden"> (</span>
+                  {a.tag}
+                  <span class="visually-hidden">)</span>
+                </span>
+              )}
             </h3>
-            {a.styles?.length ? <p class="styles muted">{a.styles.join(' · ')}</p> : <span class="styles" />}
+            {a.styles?.length ? <p class="styles muted">{a.styles.join(', ')}</p> : <span class="styles" />}
             {a.instagram ? (
               <a class="link label" href={`https://www.instagram.com/${a.instagram}/`} target="_blank" rel="noopener">
                 @{a.instagram}
@@ -50,15 +53,6 @@ const rows = artists.map((a, i) => ({ ...a, n: String(i + 1).padStart(2, '0'), i
         ))
       }
     </ol>
-
-    <aside class="guest" data-reveal>
-      <Icon name="star" class="guest__star" />
-      <p>
-        <strong class="label">Guest welcome</strong>
-        <span class="muted">¿Eres artista y estás de paso por Sevilla? El estudio recibe tatuadores invitados. Escríbenos por Instagram.</span>
-      </p>
-      <a class="text-link" href={site.instagram.dm} target="_blank" rel="noopener">Escribir</a>
-    </aside>
   </div>
 </section>
 
@@ -148,15 +142,15 @@ const rows = artists.map((a, i) => ({ ...a, n: String(i + 1).padStart(2, '0'), i
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    min-height: 2.75rem;
+    min-height: var(--tap);
     text-decoration: none;
-    text-transform: none;
     letter-spacing: 0.04em;
     font-size: 0.9rem;
     color: var(--bone-dim);
     transition: color 0.2s;
   }
 
+  /* Toda la fila es pulsable */
   .link::after {
     content: '';
     position: absolute;
@@ -204,47 +198,6 @@ const rows = artists.map((a, i) => ({ ...a, n: String(i + 1).padStart(2, '0'), i
       display: block;
       text-align: right;
       padding-right: 2rem;
-    }
-  }
-
-  .guest {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 1rem;
-    align-items: start;
-    margin-top: var(--space-xl);
-    padding: var(--space-m);
-    border: 1px dashed rgb(181 134 90 / 0.5);
-  }
-
-  .guest p {
-    display: grid;
-    gap: 0.3rem;
-  }
-
-  .guest strong {
-    color: var(--oak);
-  }
-
-  .guest .text-link {
-    grid-column: 2;
-    justify-self: start;
-  }
-
-  .guest :global(.guest__star) {
-    width: 1.1rem;
-    height: 1.1rem;
-    color: var(--tear);
-    margin-top: 0.15rem;
-  }
-
-  @media (min-width: 768px) {
-    .guest {
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-    }
-    .guest .text-link {
-      grid-column: auto;
     }
   }
 </style>

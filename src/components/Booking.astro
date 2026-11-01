@@ -6,7 +6,6 @@
  */
 import { site, primaryContact } from '../data/site';
 import { artists } from '../data/artists';
-import Icon from './Icon.astro';
 
 const steps = [
   { title: 'Cuéntanos tu idea', text: 'Qué quieres, dónde y más o menos de qué tamaño. Si tienes referencias, tráelas al chat.' },
@@ -18,8 +17,8 @@ const usesWhatsapp = Boolean(site.whatsapp);
 
 <section class="section booking" id="cita" aria-labelledby="cita-title">
   <div class="wrap">
-    <p class="kicker label"><span class="num">06</span> Cómo pedir cita</p>
-    <h2 class="h2" id="cita-title" data-reveal>Tres pasos,<br />cero formularios eternos.</h2>
+    <p class="kicker label">Cómo pedir cita</p>
+    <h2 class="h2" id="cita-title" data-reveal>Tres pasos y una conversación.</h2>
 
     <ol class="steps" role="list">
       {
@@ -35,14 +34,11 @@ const usesWhatsapp = Boolean(site.whatsapp);
 
     <div class="brief" data-reveal>
       <div class="brief__intro">
-        <p class="label brief__kicker"><Icon name="drop" /> Prepara tu mensaje</p>
+        <p class="label brief__kicker">Prepara tu mensaje</p>
         <h3 class="h3">Te lo dejamos escrito.</h3>
         <p class="muted">
-          Rellena lo que sepas y te preparamos el primer mensaje para {usesWhatsapp ? 'WhatsApp' : 'Instagram'}.
-          Solo lo enviarás tú, desde tu cuenta.
-        </p>
-        <p class="privacy">
-          Nada de lo que escribas aquí se guarda ni se envía desde esta web.
+          Rellena lo que sepas y te preparamos el primer mensaje para {usesWhatsapp ? 'WhatsApp' : 'Instagram'}. Lo
+          envías tú, desde tu cuenta: esta web no guarda ni envía nada.
         </p>
         <p class="alt muted">
           ¿Prefieres ir directo?
@@ -58,46 +54,51 @@ const usesWhatsapp = Boolean(site.whatsapp);
         </div>
 
         <div class="field">
-          <label for="f-idea">Tu idea <span class="req">(obligatorio)</span></label>
-          <textarea id="f-idea" name="idea" rows="4" required maxlength="800" aria-describedby="f-idea-hint f-idea-err"></textarea>
-          <p class="hint" id="f-idea-hint">Qué quieres tatuarte, estilo, si es en negro o en color…</p>
-          <p class="error" id="f-idea-err" hidden>Cuéntanos al menos un poco de la idea (mínimo 10 caracteres).</p>
-        </div>
-
-        <div class="row">
-          <div class="field">
-            <label for="f-zone">Zona del cuerpo</label>
-            <input id="f-zone" name="zone" type="text" maxlength="60" placeholder="Antebrazo, gemelo…" />
-          </div>
-          <div class="field">
-            <label for="f-size">Tamaño aproximado</label>
-            <select id="f-size" name="size">
-              <option value="">Sin especificar</option>
-              <option>Pequeño (menos de 5 cm)</option>
-              <option>Mediano (5–15 cm)</option>
-              <option>Grande (más de 15 cm)</option>
-              <option>Proyecto grande (manga, espalda…)</option>
-              <option>No lo sé todavía</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field">
           <label for="f-artist">¿Con quién?</label>
           <select id="f-artist" name="artist">
-            <option value="">Me da igual / que me aconsejen</option>
+            <option value="">Que me aconsejen</option>
             {artists.map((a) => <option value={a.name}>{a.name}</option>)}
           </select>
         </div>
 
-        <p class="hint">Las fotos de referencia las podrás mandar en el propio chat.</p>
+        <div class="field field--full">
+          <label for="f-idea">Tu idea <span class="req">(obligatorio)</span></label>
+          <textarea
+            id="f-idea"
+            name="idea"
+            rows="3"
+            required
+            maxlength="800"
+            placeholder="Qué quieres tatuarte, estilo, en negro o en color…"
+            aria-describedby="f-idea-err"></textarea>
+          <p class="error" id="f-idea-err" hidden>Cuéntanos al menos un poco de la idea (mínimo 10 caracteres).</p>
+        </div>
 
-        <button class="btn btn--primary submit" type="submit">
-          {usesWhatsapp ? 'Abrir WhatsApp con mi mensaje' : 'Copiar mensaje y abrir Instagram'}
-          <Icon name="arrow" />
-        </button>
+        <div class="field">
+          <label for="f-zone">Zona del cuerpo</label>
+          <input id="f-zone" name="zone" type="text" maxlength="60" placeholder="Antebrazo, gemelo…" />
+        </div>
 
-        <div class="result" role="status" aria-live="polite" data-brief-status hidden>
+        <div class="field">
+          <label for="f-size">Tamaño aproximado</label>
+          <select id="f-size" name="size">
+            <option value="">Sin especificar</option>
+            <option>Pequeño (menos de 5 cm)</option>
+            <option>Mediano (5–15 cm)</option>
+            <option>Grande (más de 15 cm)</option>
+            <option>Proyecto grande (manga, espalda…)</option>
+            <option>No lo sé todavía</option>
+          </select>
+        </div>
+
+        <div class="form__foot field--full">
+          <p class="hint">Las fotos de referencia las mandas luego en el chat.</p>
+          <button class="btn btn--primary submit" type="submit">
+            {usesWhatsapp ? 'Abrir WhatsApp con mi mensaje' : 'Copiar mensaje y abrir Instagram'}
+          </button>
+        </div>
+
+        <div class="result field--full" role="status" aria-live="polite" data-brief-status hidden>
           <p class="result__msg" data-brief-msg></p>
           <pre class="result__text" data-brief-text></pre>
           <div class="result__actions">
@@ -116,14 +117,22 @@ const usesWhatsapp = Boolean(site.whatsapp);
 
 <style>
   .booking .h2 {
-    max-width: 14ch;
+    max-width: none;
+    text-wrap: balance;
+  }
+
+  /* En escritorio el titular va en una sola línea horizontal */
+  @media (min-width: 960px) {
+    .booking .h2 {
+      font-size: min(var(--step-5), 5.2vw);
+      white-space: nowrap;
+    }
   }
 
   .steps {
     display: grid;
     gap: var(--space-l);
-    margin-block: var(--space-xl);
-    counter-reset: step;
+    margin-block: var(--space-l);
   }
 
   .steps li {
@@ -152,22 +161,22 @@ const usesWhatsapp = Boolean(site.whatsapp);
 
   .brief {
     display: grid;
-    gap: var(--space-l);
-    padding: clamp(1.25rem, 4vw, 3.5rem);
+    gap: var(--space-m);
+    padding: clamp(1rem, 0.6rem + 2vw, 2rem);
     background: var(--ink-2);
     border: 1px solid var(--color-border);
   }
 
   @media (min-width: 960px) {
     .brief {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      gap: var(--space-xl);
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      gap: var(--space-l);
     }
   }
 
   .brief__intro {
     display: grid;
-    gap: var(--space-s);
+    gap: 0.6rem;
     align-content: start;
   }
 
@@ -178,40 +187,36 @@ const usesWhatsapp = Boolean(site.whatsapp);
     color: var(--tear);
   }
 
-  .brief__kicker :global(svg) {
-    width: 0.7rem;
-    height: auto;
-  }
-
-  .privacy {
-    font-size: 0.9rem;
-    padding-left: 0.75rem;
-    border-left: 2px solid var(--oak);
-  }
-
   .alt {
     font-size: 0.95rem;
   }
 
   .form {
     display: grid;
-    gap: var(--space-m);
-  }
-
-  .row {
-    display: grid;
-    gap: var(--space-m);
+    gap: 0.85rem var(--space-s);
   }
 
   @media (min-width: 640px) {
-    .row {
+    .form {
       grid-template-columns: 1fr 1fr;
     }
+    .field--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .form__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem var(--space-m);
   }
 
   .field {
     display: grid;
-    gap: 0.4rem;
+    gap: 0.3rem;
+    align-content: start;
   }
 
   label {
@@ -229,17 +234,17 @@ const usesWhatsapp = Boolean(site.whatsapp);
   select,
   textarea {
     width: 100%;
-    min-height: 3rem;
-    padding: 0.7rem 0.85rem;
+    min-height: var(--tap);
+    padding: 0.55rem 0.8rem;
     background: var(--ink);
-    border: 1px solid rgb(236 230 218 / 0.28);
+    border: 1px solid var(--line-strong);
     border-radius: 0;
     transition: border-color 0.2s;
   }
 
   textarea {
     resize: vertical;
-    min-height: 7rem;
+    min-height: 5.5rem;
   }
 
   select {
@@ -253,14 +258,15 @@ const usesWhatsapp = Boolean(site.whatsapp);
     padding-right: 2.25rem;
   }
 
-  input::placeholder {
-    color: #8a8276;
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--placeholder);
   }
 
   input:hover,
   select:hover,
   textarea:hover {
-    border-color: rgb(236 230 218 / 0.5);
+    border-color: var(--bone-dim);
   }
 
   input:focus-visible,
@@ -271,7 +277,7 @@ const usesWhatsapp = Boolean(site.whatsapp);
   }
 
   [aria-invalid='true'] {
-    border-color: #f0a08a;
+    border-color: var(--danger);
   }
 
   .hint {
@@ -281,7 +287,7 @@ const usesWhatsapp = Boolean(site.whatsapp);
 
   .error {
     font-size: 0.9rem;
-    color: #f0a08a;
+    color: var(--danger);
   }
 
   .error::before {
@@ -294,7 +300,7 @@ const usesWhatsapp = Boolean(site.whatsapp);
 
   @media (max-width: 639px) {
     .submit {
-      justify-self: stretch;
+      width: 100%;
     }
   }
 

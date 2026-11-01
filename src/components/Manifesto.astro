@@ -1,6 +1,6 @@
 ---
-import { site } from '../data/site';
-import Icon from './Icon.astro';
+import { poster } from "../data/gallery";
+import Media from "./Media.astro";
 
 // Texto provisional: pendiente de aprobación por el estudio.
 const principles = [
@@ -11,20 +11,19 @@ const principles = [
 ---
 
 <section class="section paper manifesto" id="nosotros" aria-labelledby="manifiesto-title">
-  <svg class="big-drop" viewBox="0 0 24 32" aria-hidden="true" focusable="false">
-    <path d="M12 0.6S0.6 14.4 0.6 20.6A11.4 11 0 0 0 12 31.4a11.4 11 0 0 0 11.4-10.8C23.4 14.4 12 .6 12 .6Z" />
-  </svg>
-
   <div class="wrap">
-    <p class="kicker label">
-      <span class="num">03</span> La casa
-      {site.showDraftMarks && <span class="draft-chip">Texto provisional</span>}
-    </p>
+    <p class="kicker label">La casa</p>
 
     <div class="layout">
-      <h2 class="h2 quote" id="manifiesto-title" data-reveal>
-        Primero se habla. <span>Luego se dibuja.</span>
-      </h2>
+      <div class="lead-col">
+        <h2 class="h2 quote" id="manifiesto-title" data-reveal>
+          Primero se habla.<br />Luego se dibuja.
+        </h2>
+        <figure class="poster" data-reveal style="--delay:.1s">
+          <Media image={poster.image} alt={poster.alt} aspect="4 / 3" sizes="(min-width: 960px) 40vw, 100vw" />
+          <figcaption class="label">Cartel de la casa</figcaption>
+        </figure>
+      </div>
 
       <div class="body">
         <p class="lede" data-reveal>
@@ -32,23 +31,18 @@ const principles = [
           llevar contigo y lo convertimos en un diseño que sea tuyo de verdad.
         </p>
 
-        <ol class="principles" role="list">
+        <ul class="principles" role="list">
           {
             principles.map((p, i) => (
               <li data-reveal style={`--delay:${i * 0.08}s`}>
-                <span class="label num">{String(i + 1).padStart(2, '0')}</span>
-                <div>
-                  <h3 class="h3">{p.title}</h3>
-                  <p>{p.text}</p>
-                </div>
+                <h3 class="h3">{p.title}</h3>
+                <p>{p.text}</p>
               </li>
             ))
           }
-        </ol>
+        </ul>
       </div>
     </div>
-
-    <p class="sign label" aria-hidden="true"><Icon name="star" /> La Llorona <Icon name="star" /></p>
   </div>
 </section>
 
@@ -57,28 +51,30 @@ const principles = [
     overflow: hidden;
   }
 
-  .big-drop {
-    position: absolute;
-    right: -6vw;
-    bottom: -14vw;
-    width: clamp(16rem, 42vw, 40rem);
-    height: auto;
-    fill: none;
-    stroke: var(--ink);
-    stroke-width: 0.08;
-    opacity: 0.22;
-    pointer-events: none;
-  }
-
   .layout {
     display: grid;
     gap: var(--space-xl);
     position: relative;
   }
 
-  .quote span {
-    display: block;
-    color: var(--tear-deep);
+  .lead-col {
+    display: grid;
+    gap: var(--space-l);
+    align-content: start;
+  }
+
+  .poster {
+    max-width: 34rem;
+  }
+
+  .poster :global(.media) {
+    transform: rotate(-1.5deg);
+    box-shadow: 0 18px 40px -20px rgb(14 13 12 / 0.45);
+  }
+
+  .poster figcaption {
+    padding-top: 0.6rem;
+    color: var(--oak-deep);
   }
 
   .body {
@@ -93,35 +89,14 @@ const principles = [
 
   .principles li {
     display: grid;
-    grid-template-columns: 3rem 1fr;
-    gap: 1rem;
+    gap: 0.4rem;
     padding-block: var(--space-m);
     border-bottom: 1px solid var(--color-border);
   }
 
-  .principles .num {
-    color: #7a5431;
-    padding-top: 0.5rem;
-  }
-
   .principles p {
-    margin-top: 0.4rem;
     max-width: 44ch;
     color: var(--color-muted);
-  }
-
-  .sign {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-top: var(--space-xl);
-    color: #7a5431;
-    position: relative;
-  }
-
-  .sign :global(svg) {
-    width: 0.8rem;
-    height: 0.8rem;
   }
 
   @media (min-width: 960px) {
@@ -129,7 +104,7 @@ const principles = [
       grid-template-columns: repeat(12, minmax(0, 1fr));
       column-gap: var(--gutter);
     }
-    .quote {
+    .lead-col {
       grid-column: 1 / 7;
       position: sticky;
       top: calc(var(--header-h) + var(--space-l));

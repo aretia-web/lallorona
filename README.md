@@ -56,9 +56,9 @@ npm run check
 - “Prepara tu mensaje” **no envía ni guarda datos**: compone el texto en el navegador; con Instagram lo copia al portapapeles y abre el chat.
 - Si en el futuro se quiere un formulario que llegue al estudio, la opción más simple es **Netlify Forms** (con campo trampa antispam y aviso de privacidad actualizado).
 
-### Marcas provisionales
+### Fotos que falten
 
-`showDraftMarks: true` en `site.ts` muestra etiquetas “Texto provisional” y “Foto pendiente”. Ponlo a `false` cuando el estudio apruebe los textos y estén todas las fotos.
+Si una ranura no tiene foto, se muestra una placa «Foto pendiente». La indicación de dónde sustituirla solo aparece al trabajar en local (`npm run dev`).
 
 ## Desplegar en Netlify
 
@@ -70,8 +70,8 @@ No hace falta ninguna variable de entorno.
 
 ## Pendiente de confirmar con el estudio
 
-- [ ] **Fotos**: trabajos (8 para la portada), foto principal del hero, 2 del espacio, retratos de residentes (opcional).
-- [ ] **Logotipo** en SVG (ahora se usa una marca provisional: lágrima + nombre en gótica) e imagen social `public/og.png` (regenerable con `node scripts/make-social.mjs`).
+- [ ] **Fotos en alta resolución**: los 5 trabajos actuales son capturas de Instagram (~400 px) y se ven algo blandos en pantallas grandes. Sustituir por los originales con el mismo nombre en `src/assets/trabajos/`. Más trabajos para la galería y retratos de residentes (opcional).
+- [ ] **Logotipo en vectorial (SVG)**: ahora se usa un PNG limpiado a partir del sello de Instagram (`src/assets/marca/logo.png`). La imagen social `public/og.png` se regenera con `node scripts/make-social.mjs`.
 - [ ] **Textos** del manifiesto y de “El estudio” (redactados como propuesta).
 - [ ] **WhatsApp / teléfono**, si quieren usarlos.
 - [ ] **Horario** (o confirmar que es solo con cita).

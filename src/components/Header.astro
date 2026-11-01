@@ -46,7 +46,6 @@ import Wordmark from './Wordmark.astro';
           nav.map((item, i) => (
             <li style={`--i:${i}`}>
               <a href={item.href} data-menu-link>
-                <span class="label num">{String(i + 1).padStart(2, '0')}</span>
                 <span class="display">{item.label}</span>
               </a>
             </li>
@@ -57,9 +56,8 @@ import Wordmark from './Wordmark.astro';
     <div class="wrap mobile-menu__foot">
       <a class="btn btn--primary" href={primaryContact.href} target="_blank" rel="noopener">
         Pide tu cita por {primaryContact.channel}
-        <Icon name="arrow" />
       </a>
-      <p class="label muted">Private Studio · Montequinto, Sevilla</p>
+      <p class="label muted">Private studio en Montequinto, Sevilla</p>
     </div>
   </div>
 </header>
@@ -106,7 +104,8 @@ import Wordmark from './Wordmark.astro';
     text-decoration: none;
     margin-right: auto;
     display: inline-flex;
-    padding-block: 0.4rem;
+    align-items: center;
+    min-height: var(--tap);
   }
 
   .desktop-nav {

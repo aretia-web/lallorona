@@ -6,7 +6,7 @@ const wa = whatsappUrl();
 
 <section class="section contact" id="contacto" aria-labelledby="contacto-title">
   <div class="wrap">
-    <p class="kicker label"><span class="num">07</span> Contacto</p>
+    <p class="kicker label">Contacto</p>
 
     <div class="layout">
       <div class="where">
@@ -14,13 +14,12 @@ const wa = whatsappUrl();
         <address class="address">
           <span class="display street">{site.address.street}</span>
           <span class="label muted">
-            {site.address.postalCode && `${site.address.postalCode} · `}{site.address.area}, {site.address.city}
+            {site.address.postalCode && `${site.address.postalCode} `}{site.address.area}, {site.address.city}
           </span>
         </address>
         <div class="actions">
           <a class="btn btn--primary" href={primaryContact.href} target="_blank" rel="noopener">
             Pide tu cita
-            <Icon name="arrow" />
           </a>
           <a class="btn btn--ghost" href={mapsUrl} target="_blank" rel="noopener">
             <Icon name="pin" /> Cómo llegar
@@ -32,7 +31,7 @@ const wa = whatsappUrl();
         <div>
           <dt class="label">Instagram</dt>
           <dd>
-            <a class="text-link" href={site.instagram.url} target="_blank" rel="noopener">@{site.instagram.handle}</a>
+            <a class="text-link tap" href={site.instagram.url} target="_blank" rel="noopener">@{site.instagram.handle}</a>
             <span class="muted note">Mensaje directo para citas y dudas.</span>
           </dd>
         </div>
@@ -41,7 +40,7 @@ const wa = whatsappUrl();
             <div>
               <dt class="label">WhatsApp</dt>
               <dd>
-                <a class="text-link" href={wa} target="_blank" rel="noopener">Escribir por WhatsApp</a>
+                <a class="text-link tap" href={wa} target="_blank" rel="noopener">Escribir por WhatsApp</a>
               </dd>
             </div>
           )
@@ -51,7 +50,7 @@ const wa = whatsappUrl();
             <div>
               <dt class="label">Teléfono</dt>
               <dd>
-                <a class="text-link" href={phoneHref}>{site.phone}</a>
+                <a class="text-link tap" href={phoneHref}>{site.phone}</a>
               </dd>
             </div>
           )
@@ -102,7 +101,6 @@ const wa = whatsappUrl();
 
   .street {
     font-size: var(--step-3);
-    color: var(--tear);
   }
 
   .actions {

@@ -12,8 +12,8 @@ const filled = name === 'drop' || name === 'star';
 <svg
   class:list={[name === 'arrow' && 'arrow', className]}
   viewBox={name === 'drop' ? '0 0 24 32' : '0 0 24 24'}
-  width={size}
-  height={size ? (name === 'drop' ? (size * 32) / 24 : size) : undefined}
+  width={size ?? (name === 'drop' ? '0.75em' : '1em')}
+  height={size ? (name === 'drop' ? (size * 32) / 24 : size) : '1em'}
   fill={filled ? 'currentColor' : 'none'}
   stroke={filled ? 'none' : 'currentColor'}
   stroke-width="1.6"

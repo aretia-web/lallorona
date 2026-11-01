@@ -7,11 +7,11 @@ import Media from './Media.astro';
 import Icon from './Icon.astro';
 
 const items = await Promise.all(
-  works.map(async (work, i) => {
+  works.map(async (work) => {
     const src = resolveImage(work.image);
     const full = src ? await getImage({ src, width: Math.min(src.width, 1800), format: 'webp', quality: 82 }) : null;
-    const caption = [work.title, work.artist && `por ${work.artist}`].filter(Boolean).join(' · ');
-    return { ...work, n: String(i + 1).padStart(2, '0'), full, caption };
+    const caption = [work.title, work.artist && `por ${work.artist}`].filter(Boolean).join(', ');
+    return { ...work, full, caption };
   }),
 );
 
@@ -20,19 +20,11 @@ const counts = new Map<string, number>();
 works.forEach((w) => w.category && counts.set(w.category, (counts.get(w.category) ?? 0) + 1));
 const categories = [...counts].filter(([, n]) => n >= 3).map(([c]) => c);
 const showFilters = categories.length >= 2;
-
-const sizes: Record<string, string> = {
-  feature: '(min-width: 960px) 46vw, 100vw',
-  wide: '(min-width: 960px) 46vw, 100vw',
-  tall: '(min-width: 960px) 23vw, 50vw',
-  regular: '(min-width: 960px) 23vw, 50vw',
-};
-const aspects: Record<string, string> = { feature: '4 / 5', wide: '16 / 10', tall: '3 / 4', regular: '3 / 4' };
 ---
 
 <section class="section gallery" id="trabajos" aria-labelledby="trabajos-title">
   <div class="wrap">
-    <p class="kicker label"><span class="num">02</span> Trabajos</p>
+    <p class="kicker label">Trabajos</p>
 
     <div class="intro">
       <h2 class="h2" id="trabajos-title" data-reveal>Hecho aquí.</h2>
@@ -55,10 +47,10 @@ const aspects: Record<string, string> = { feature: '4 / 5', wide: '16 / 10', tal
       )
     }
 
-    <ul class="grid-works" role="list" data-gallery>
+    <ul class="mosaic" role="list" data-gallery>
       {
         items.map((item, i) => (
-          <li class={`work work--${item.size}`} data-category={item.category ?? ''} data-reveal style={`--delay:${(i % 3) * 0.08}s`}>
+          <li class:list={["work", item.size === "feature" && "work--feature"]} data-category={item.category ?? ""} data-reveal style={`--delay:${(i % 3) * 0.08}s`}>
             {item.full ? (
               <button
                 type="button"
@@ -68,19 +60,19 @@ const aspects: Record<string, string> = { feature: '4 / 5', wide: '16 / 10', tal
                 data-caption={item.caption}
                 aria-label={`Ampliar: ${item.alt}`}
               >
-                <Media image={item.image} alt={item.alt} aspect={aspects[item.size]} sizes={sizes[item.size]} />
-                <span class="work__zoom label" aria-hidden="true">
-                  <Icon name="expand" /> Ampliar
-                </span>
+                <Media
+                  image={item.image}
+                  alt={item.alt}
+                  aspect="4 / 5"
+                  sizes={item.size === 'feature' ? '(min-width: 960px) 46vw, 100vw' : '(min-width: 960px) 23vw, 50vw'}
+                  position={item.position}
+                />
+                {item.caption && <span class="work__tag label">{item.caption}</span>}
+                <span class="work__zoom" aria-hidden="true"><Icon name="expand" /></span>
               </button>
             ) : (
-              <Media image={item.image} alt={item.alt} aspect={aspects[item.size]} sizes={sizes[item.size]} />
+              <Media image={item.image} alt={item.alt} aspect="4 / 5" sizes="(min-width: 960px) 23vw, 50vw" />
             )}
-            <p class="work__meta label">
-              <span class="num">{item.n}</span>
-              {item.caption && <span>{item.caption}</span>}
-              {item.category && <span class="muted">{item.category}</span>}
-            </p>
           </li>
         ))
       }
@@ -118,8 +110,8 @@ const aspects: Record<string, string> = { feature: '4 / 5', wide: '16 / 10', tal
 <style>
   .intro {
     display: grid;
-    gap: var(--space-m);
-    margin-bottom: var(--space-xl);
+    gap: var(--space-s) var(--space-l);
+    margin-bottom: var(--space-l);
     align-items: end;
   }
 
@@ -133,19 +125,15 @@ const aspects: Record<string, string> = { feature: '4 / 5', wide: '16 / 10', tal
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: var(--space-l);
+    margin-bottom: var(--space-m);
   }
 
   .chip {
-    min-height: 2.75rem;
+    min-height: var(--tap);
     padding: 0.4rem 1rem;
     border: 1px solid var(--color-border);
     background: none;
-    font-variation-settings: 'wdth' 75;
     font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-size: 0.8rem;
     cursor: pointer;
   }
 
@@ -155,20 +143,37 @@ const aspects: Record<string, string> = { feature: '4 / 5', wide: '16 / 10', tal
     border-color: var(--bone);
   }
 
-  .grid-works {
+  /* Mosaico sin huecos: 2 columnas en móvil; en escritorio la pieza principal ocupa 2x2. */
+  .mosaic {
+    --gap: clamp(0.4rem, 0.25rem + 0.6vw, 0.85rem);
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-l) var(--gutter);
-    align-items: start;
+    gap: var(--gap);
   }
 
   .work[hidden] {
     display: none;
   }
 
-  .work--feature,
-  .work--wide {
+  .work--feature {
     grid-column: span 2;
+  }
+
+  @media (min-width: 960px) {
+    .mosaic {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .work--feature {
+      grid-row: span 2;
+    }
+    .work--feature,
+    .work--feature .work__open,
+    .work--feature :global(.media) {
+      height: 100%;
+    }
+    .work--feature :global(.media) {
+      aspect-ratio: auto;
+    }
   }
 
   .work__open {
@@ -179,101 +184,53 @@ const aspects: Record<string, string> = { feature: '4 / 5', wide: '16 / 10', tal
     border: 0;
     background: none;
     cursor: zoom-in;
+    overflow: hidden;
   }
 
   .work__open :global(img) {
-    transition:
-      transform 0.8s var(--ease),
-      filter 0.4s;
+    transition: transform 0.8s var(--ease);
   }
 
   .work__open:hover :global(img),
   .work__open:focus-visible :global(img) {
     transform: scale(1.03);
-    filter: contrast(1.06);
+  }
+
+  .work__tag {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    max-width: calc(100% - 3rem);
+    padding: 0.4rem 0.65rem;
+    background: var(--ink);
+    color: var(--bone);
+    text-align: left;
   }
 
   .work__zoom {
     position: absolute;
-    left: 0.75rem;
-    bottom: 0.75rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 0.6rem;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
     background: var(--ink);
     color: var(--bone);
-    opacity: 0;
-    transform: translateY(4px);
     transition:
-      opacity 0.3s,
-      transform 0.3s var(--ease);
+      background-color 0.25s,
+      color 0.25s;
   }
 
   .work__zoom :global(svg) {
-    width: 0.9rem;
-    height: 0.9rem;
+    width: 0.95rem;
+    height: 0.95rem;
   }
 
   .work__open:hover .work__zoom,
   .work__open:focus-visible .work__zoom {
-    opacity: 1;
-    transform: none;
-  }
-
-  @media (hover: none) {
-    .work__zoom {
-      opacity: 1;
-      transform: none;
-      padding: 0.35rem;
-    }
-    .work__zoom :global(svg) + * {
-      display: none;
-    }
-  }
-
-  .work__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 0.75rem;
-    padding-top: 0.6rem;
-  }
-
-  .work__meta .num {
-    color: var(--oak);
-  }
-
-  @media (min-width: 960px) {
-    .grid-works {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      grid-auto-flow: dense;
-      row-gap: var(--space-xl);
-    }
-    .work--feature {
-      grid-column: span 6;
-    }
-    .work--wide {
-      grid-column: span 6;
-    }
-    .work--tall {
-      grid-column: span 3;
-    }
-    .work--regular {
-      grid-column: span 3;
-    }
-    .work--regular :global(.media) {
-      aspect-ratio: 1 / 1;
-    }
-    /* Desfase editorial: las piezas pequeñas bajan respecto a la protagonista. */
-    .work:nth-child(3) {
-      margin-top: 40%;
-    }
-    .work:nth-child(5) {
-      margin-top: -18%;
-    }
-    .work:nth-child(8) {
-      margin-top: 30%;
-    }
+    background: var(--tear);
+    color: var(--ink);
   }
 
   .more {
@@ -281,10 +238,8 @@ const aspects: Record<string, string> = { feature: '4 / 5', wide: '16 / 10', tal
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-m);
-    margin-top: var(--space-xl);
-    padding-top: var(--space-m);
-    border-top: 1px solid var(--color-border);
+    gap: var(--space-s) var(--space-m);
+    margin-top: var(--space-m);
   }
 
   .more .btn :global(svg) {
@@ -314,7 +269,7 @@ const aspects: Record<string, string> = { feature: '4 / 5', wide: '16 / 10', tal
   }
 
   .lightbox::backdrop {
-    background: rgb(14 13 12 / 0.9);
+    background: var(--ink-veil);
   }
 
   @keyframes lb-in {

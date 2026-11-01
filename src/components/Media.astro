@@ -4,7 +4,6 @@
  */
 import { Picture } from 'astro:assets';
 import { resolveImage } from '../lib/images';
-import { site } from '../data/site';
 import Icon from './Icon.astro';
 
 interface Props {
@@ -57,7 +56,7 @@ if (src && usableWidths.length === 0) usableWidths.push(src.width);
       <div class="plate" role="img" aria-label={alt}>
         <Icon name="star" class="plate__star" />
         <span class="plate__text label">{placeholder}</span>
-        {site.showDraftMarks && <span class="plate__hint">Sustituir en src/assets</span>}
+        {import.meta.env.DEV && <span class="plate__hint">Sustituir en src/assets</span>}
       </div>
     )
   }
@@ -69,6 +68,10 @@ if (src && usableWidths.length === 0) usableWidths.push(src.width);
     aspect-ratio: var(--aspect);
     overflow: hidden;
     background: var(--ink-3);
+  }
+
+  .media :global(picture) {
+    height: 100%;
   }
 
   .media :global(img) {
@@ -95,7 +98,7 @@ if (src && usableWidths.length === 0) usableWidths.push(src.width);
     outline-offset: -10px;
   }
 
-  .plate__star {
+  .plate :global(.plate__star) {
     width: 1.4rem;
     height: 1.4rem;
   }

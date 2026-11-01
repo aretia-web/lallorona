@@ -1,19 +1,19 @@
 ---
-import { primaryContact } from '../data/site';
-import Icon from './Icon.astro';
+import { Image } from "astro:assets";
+import { primaryContact } from "../data/site";
+import { logo } from "../data/gallery";
+import { resolveImage } from "../lib/images";
+const seal = resolveImage(logo.image);
 ---
 
 <section class="final" aria-labelledby="final-title">
   <div class="wrap inner">
-    <svg class="tear" viewBox="0 0 24 32" aria-hidden="true" focusable="false">
-      <path d="M12 0S0 14.2 0 20.6A11.8 11.4 0 0 0 12 32a11.8 11.4 0 0 0 12-11.4C24 14.2 12 0 12 0Z" />
-    </svg>
+    {seal && <Image class="seal" src={seal} alt={logo.alt} widths={[280, 552]} sizes="(min-width: 960px) 30rem, 70vw" loading="lazy" />}
     <div class="copy">
       <h2 class="display title" id="final-title" data-reveal>¿Ya lo tienes<br />en la cabeza?</h2>
       <p class="lede" data-reveal style="--delay:.08s">Cuéntanoslo tal cual. Del resto nos encargamos juntos.</p>
       <a class="btn btn--primary" href={primaryContact.href} target="_blank" rel="noopener" data-reveal style="--delay:.14s">
         Escríbenos por {primaryContact.channel}
-        <Icon name="arrow" />
       </a>
     </div>
   </div>
@@ -24,10 +24,9 @@ import Icon from './Icon.astro';
     position: relative;
     overflow: hidden;
     padding-block: var(--space-2xl);
-    border-top: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
+    /* Halo completo, difuminado hasta el fondo sin tocar los bordes de la sección */
     background:
-      radial-gradient(circle at 78% 60%, rgb(134 193 232 / 0.09), transparent 45%),
+      radial-gradient(ellipse 42% 62% at 76% 50%, rgb(134 193 232 / 0.1), transparent 100%),
       var(--ink);
   }
 
@@ -35,18 +34,6 @@ import Icon from './Icon.astro';
     position: relative;
     display: grid;
     align-items: center;
-  }
-
-  .tear {
-    position: absolute;
-    right: var(--gutter);
-    top: 50%;
-    transform: translateY(-50%);
-    height: 120%;
-    width: auto;
-    fill: var(--tear);
-    opacity: 0.12;
-    pointer-events: none;
   }
 
   .copy {
@@ -60,14 +47,27 @@ import Icon from './Icon.astro';
     font-size: var(--step-5);
   }
 
+  .inner :global(.seal) {
+    width: min(70vw, 20rem);
+    height: auto;
+    justify-self: center;
+    margin-bottom: var(--space-l);
+    opacity: 0.95;
+  }
+
   @media (min-width: 960px) {
-    .tear {
-      opacity: 1;
-      height: 88%;
-      right: 10%;
-      fill: none;
-      stroke: var(--tear);
-      stroke-width: 0.12;
+    .inner {
+      grid-template-columns: 1fr auto;
+      gap: var(--space-xl);
+    }
+    .copy {
+      grid-row: 1;
+    }
+    .inner :global(.seal) {
+      grid-column: 2;
+      grid-row: 1;
+      width: clamp(18rem, 28vw, 30rem);
+      margin: 0;
     }
   }
 </style>
